@@ -1,11 +1,11 @@
-from dataclasses import field
+from dataclasses import field, fields
 from pyexpat import model
 from rest_framework import serializers
 from .models import TranSum
 from django.db.models import Sum,Count,Max,Min,Q
 
 
-class TranSumSerializer(serializers.ModelSerializer):
+class TranSumSaveSerializer(serializers.ModelSerializer):
     # total_qty=serializers.IntegerField()
     # nbr=serializers.IntegerField()
     
@@ -23,14 +23,17 @@ class TranSumSerializer(serializers.ModelSerializer):
     #     totalopening = TranSum.objects.filter(trId=1).aggregate(investment_value=Sum('sVal'))
     #     return totalopening["investment_value"]
 
+class TranSumRetrivSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=TranSum
+        fields=['trId','trDate','qty','rate','sVal','sttCharges','otherCharges','noteAdd']
 
 
+class TranSumRetrivesc2Serializer(serializers.ModelSerializer):
+    # addi = serializers.SerializerMethodField()
+    # addition=serializers.IntegerField()
+   
+    class Meta:
+        model=TranSum
+        fields=['trId','fmr','isinCode']
 
-# class TranSumSerializersc2(serializers.ModelSerializer):
-#     total_qty=serializers.IntegerField()
-#     nbr=serializers.IntegerField()
-#     class Meta:
-#         model=TranSum
-#         fields = ['total_qty','nbr']
-
-    
