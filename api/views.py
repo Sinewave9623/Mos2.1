@@ -1,4 +1,3 @@
-from pandas import Series
 from .models import TranSum
 from rest_framework import generics
 from rest_framework import status
@@ -8,22 +7,22 @@ from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http import Http404
 from rest_framework.views import APIView
-from .serializers import TranSumSaveSerializer,TranSumRetrivSerializer,TranSumRetrivesc2Serializer,TranssumRetInvSc1Serializer,MosSc1serializer
+from .serializers import SavePurchSerializer,RetTransSumSerializer,TranSumRetrivesc2Serializer,RetInvSc1serializer
 
 
-# -------------------- Saving API
-class MosSaveApi(APIView):
+# -------------------- SavePurch API
+class SavePurch(APIView):
     def post(self, request, format=None):
-        serializer = TranSumSaveSerializer(data=request.data)
+        serializer = SavePurchSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# -------------------------- Retriveing API
-class MosRetrive(generics.ListAPIView):
+# -------------------------- RetTransSum API
+class RetTransSum(generics.ListAPIView):
     queryset=TranSum.objects.all()
-    serializer_class=TranSumRetrivSerializer
+    serializer_class=RetTransSumSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['group','code','againstType','part']
 
@@ -55,7 +54,7 @@ class MosRetrive(generics.ListAPIView):
 #   ------------------------- Update and Retrive API
 class MosRetrieveUpdate(generics.RetrieveUpdateAPIView):
     queryset=TranSum.objects.all()
-    serializer_class=TranSumRetrivSerializer
+    serializer_class=RetTransSumSerializer
     def update(self, request, *args, **kwargs):
        partial = kwargs.pop('partial', False)
        instance = self.get_object()
@@ -98,7 +97,7 @@ class RetriveAPISc2(APIView):
         print(varop)  
         # --------------------- Additions
         addition = TranSum.objects.filter(trDate__range=(start_fy,end_fy),group=group,code=code,againstType=againstType,part=part).values_list('qty')
-        print("Daaaa",addition)
+        # print("Daaaa",addition)
         b=list(addition)
         varadd=0
         for i in b:
@@ -228,5 +227,5 @@ class RetInvSc1(APIView):
         # print("Inv Values--->",inv_value)
 
         sc1 = TranSum.objects.filter(trDate__lt=start_fy,group=group,code=code,againstType=againstType)
-        serializer = MosSc1serializer(sc1, many=True)
+        serializer = RetInvSc1serializer(sc1, many=True)
         return Response({'status':True,'msg':'done','opening':varop,'addition':varadd,'sales':0,'closing':closing,'holding qty':closing,'Inv value':inv_value,'data':serializer.data})
